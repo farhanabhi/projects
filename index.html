@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Stock Portfolio Management</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body style="background-color:rgb(241, 253, 212)">
+ <nav class="navbar navbar-dark bg-dark">
+  
+ <h3 style="text-align: center; color:beige">Stock Portfolio Management</h3>
+ <a href="login.html" class="btn btn-light">logout</a>
+</nav>
+    <div class="container">
+        
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Stock Symbol</th>
+                    <th>Shares</th>
+                    <th>Price</th>
+                    <th>Total Value</th>
+                </tr>
+            </thead>
+            <tbody id="stock-table">
+                <!-- Stock data will be inserted here -->
+            </tbody>
+        </table>
+        <a href="add.html" class="btn btn-primary mb-3">Add Stock</a>
+    </div>
+    <!-- jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <!-- Include the JavaScript file -->
+    <script src="portfolio.js"></script>
+</body>
+</html>
