@@ -1,0 +1,25 @@
+body{
+    background-image: url('pexels-eberhard-grossgasteiger-1428277.jpg');
+}
+h2{
+    color: white;
+}
+#ridesList{
+    color: azure;
+}
+footer{
+    position: absolute;
+    bottom: 2px;
+    left: 45%;
+}
+a{
+    padding-left: 45%;
+    text-decoration: none;
+    color: azure;
+}
+#homebtn{
+    margin-left: 90%;
+}
+.form-label{
+    color: azure;
+}

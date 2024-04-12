@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carpooling Website</title>
+    <!-- Link Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Link your custom CSS file -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="bg-dark text-white py-4">
+        <div class="container">
+            <h1 class="mb-1">Carpooling Website</h1>
+                <a href="login.html" class="btn btn-light" id="homebtn">logout</a>
+        </div>
+    </header>
+
+    <main class="py-4">
+        <div class="container">
+            <section class="search mb-4">
+                <h2 class="mb-3">Find a Ride</h2>
+                <form id="searchRidesForm">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" placeholder="Enter origin" name="origin">
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" placeholder="Enter destination" name="destination">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Search</button>
+                </form>
+            </section>
+
+            <section class="add-ride mb-4">
+                <h2 class="mb-3">Add a Ride</h2>
+                <form id="addRideForm" action="/add-ride" method="POST">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" placeholder="Origin" name="origin">
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" placeholder="Destination" name="destination">
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="date" class="form-control" placeholder="Date" name="date">
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="time" class="form-control" placeholder="Time" name="time">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Add Ride</button>
+                </form>
+            </section>
+
+            <section class="rides">
+                <h2 class="mb-3">Available Rides</h2>
+                <ul id="ridesList"></ul>
+            </section>
+        </div>
+    </main>
+
+    <footer class="text-white py-4" >
+        
+            <a class="mb-0" onclick="clearLocalStorage()">--------------------</a>
+        
+    </footer>
+
+    <!-- Link Bootstrap JS and your custom JS file (if any) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // Function to fetch and display rides from localStorage
+    function displayRides(rides) {
+        const ridesList = document.getElementById('ridesList');
+        ridesList.innerHTML = ''; // Clear the list
+
+        // Display each ride in the list
+        rides.forEach((ride, index) => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `Ride ${index + 1}: From ${ride.origin} to ${ride.destination}, Date: ${ride.date}, Time: ${ride.time}`;
+            const joinButton = document.createElement('button');
+            joinButton.textContent = 'Join Ride';
+            joinButton.className = 'btn btn-success join-ride-button';
+            joinButton.dataset.index = index;
+            joinButton.addEventListener('click', joinRide);
+            listItem.appendChild(joinButton);
+            ridesList.appendChild(listItem);
+        });
+    }
+
+    // Function to handle joining a ride
+    function joinRide(event) {
+        // Delete the ride details from the page
+        const listItem = event.target.closest('li');
+        if (listItem) {
+            listItem.remove();
+        }
+
+        // Redirect to add.html
+        window.location.href='https://mail.google.com/mail/u/0/#inbox?compose=new';
+    }
+
+    // Search rides based on origin and destination
+    function searchRides(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const origin = formData.get('origin').toLowerCase();
+        const destination = formData.get('destination').toLowerCase();
+
+        // Retrieve rides from localStorage
+        const rides = JSON.parse(localStorage.getItem('rides')) || [];
+
+        // Filter rides based on search criteria
+        const filteredRides = rides.filter(ride => {
+            return ride.origin.toLowerCase().includes(origin) && ride.destination.toLowerCase().includes(destination);
+        });
+
+        displayRides(filteredRides); // Display filtered rides
+    }
+
+    // Load rides from localStorage and display them
+    document.addEventListener('DOMContentLoaded', () => {
+        const rides = JSON.parse(localStorage.getItem('rides')) || [];
+        displayRides(rides);
+    });
+
+    // Clear local storage
+    function clearLocalStorage() {
+        localStorage.clear();
+        location.reload(); // Reload the page to reflect the changes
+    }
+
+    // Save data from Add Ride form to local storage and send to MongoDB
+    document.getElementById('addRideForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        const rideData = {
+            origin: formData.get('origin'),
+            destination: formData.get('destination'),
+            date: formData.get('date'),
+            time: formData.get('time')
+        };
+
+        // Save data to local storage
+        let rides = JSON.parse(localStorage.getItem('rides')) || [];
+        rides.push(rideData);
+        localStorage.setItem('rides', JSON.stringify(rides));
+
+        // Send data to MongoDB
+        fetch('/add-ride', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(rideData)
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Data saved to MongoDB');
+            } else {
+                console.error('Error saving data to MongoDB');
+            }
+        })
+        .catch(error => {
+            console.error('Error sending data to MongoDB:', error);
+        });
+
+        displayRides(rides); // Update displayed rides
+        event.target.reset(); // Clear the form
+    });
+
+    // Event listener for the search rides form submission
+    document.getElementById('searchRidesForm').addEventListener('submit', searchRides);
+    </script>
+    
+</body>
+</html>
